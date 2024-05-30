@@ -1,0 +1,135 @@
+using System;
+
+class ArrayManipulator
+{
+    private int[] array;
+
+    // Конструктор класу
+    public ArrayManipulator(int[] inputArray)
+    {
+        array = inputArray;
+    }
+
+    // Метод для обчислення кількості елементів масиву, менших за задане число
+    public int CountElementsLessThan(int number)
+    {
+        int count = 0;
+        foreach (int element in array)
+        {
+            if (element < number)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // Метод для обчислення добутку елементів масиву, розташованих між першим і другим нульовими елементами
+    public int ProductBetweenZeros()
+    {
+        int firstZeroIndex = -1;
+        int secondZeroIndex = -1;
+
+        // Пошук першого нульового елемента
+        for (int i = 0; i < array.Length; i++)
+        {
+            if (array[i] == 0)
+            {
+                firstZeroIndex = i;
+                break;
+            }
+        }
+
+        // Пошук другого нульового елемента
+        for (int i = firstZeroIndex + 1; i < array.Length; i++)
+        {
+            if (array[i] == 0)
+            {
+                secondZeroIndex = i;
+                break;
+            }
+        }
+
+        // Якщо знайдені обидва нульових елементи, обчислюємо добуток елементів між ними
+        if (firstZeroIndex != -1 && secondZeroIndex != -1)
+        {
+            int product = 1;
+            for (int i = firstZeroIndex + 1; i < secondZeroIndex; i++)
+            {
+                product *= array[i];
+            }
+            return product;
+        }
+        else
+        {
+            // Якщо не знайдено обидва нульових елементи, повертаємо 0
+            return 0;
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        int n;
+
+        // Запит на введення розміру масиву від користувача
+        Console.Write("Введіть розмір масиву: ");
+        while (!int.TryParse(Console.ReadLine(), out n) || n <= 0)
+        {
+            Console.WriteLine("Некоректне введення. Введіть ціле додатне число.");
+            Console.Write("Введіть розмір масиву: ");
+        }
+
+        int[] array = new int[n];
+
+        // Запит на вибір способу заповнення масиву
+        Console.WriteLine("Виберіть спосіб заповнення масиву:");
+        Console.WriteLine("1. Ввести масив з клавіатури");
+        Console.WriteLine("2. Заповнити масив випадковими числами");
+        Console.Write("Ваш вибір (1 або 2): ");
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                // Варіант А: введення масиву з клавіатури
+                Console.WriteLine("Введіть елементи масиву:");
+                for (int i = 0; i < n; i++)
+                {
+                    while (!int.TryParse(Console.ReadLine(), out array[i]))
+                    {
+                        Console.WriteLine("Некоректне введення. Введіть ціле число.");
+                    }
+                }
+                break;
+            case "2":
+                // Варіант Б: заповнення масиву випадковими числами
+                Random random = new Random();
+                for (int i = 0; i < n; i++)
+                {
+                    array[i] = random.Next(-100, 101);
+                }
+
+                // Вивід випадкового масиву
+                Console.WriteLine("Випадковий масив:");
+                foreach (int element in array)
+                {
+                    Console.Write(element + " ");
+                }
+                Console.WriteLine();
+                break;
+            default:
+                Console.WriteLine("Некоректний вибір. Програма завершується.");
+                return;
+        }
+
+        // Створення об'єкту класу ArrayManipulator з заданим масивом
+        ArrayManipulator manipulator = new ArrayManipulator(array);
+
+        // Виведення результатів
+        Console.WriteLine($"Кількість елементів масиву, менших за число 7: {manipulator.CountElementsLessThan(7)}");
+        Console.WriteLine($"Добуток елементів масиву, розташованих між першим і другим нульовими елементами: {manipulator.ProductBetweenZeros()}");
+    }
+}
