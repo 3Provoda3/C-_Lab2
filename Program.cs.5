@@ -1,0 +1,161 @@
+using System;
+
+class MatrixManipulator
+{
+    private int[,] matrix;
+    private int n;
+
+    // Конструктор класу
+    public MatrixManipulator(int[,] inputMatrix, int size)
+    {
+        matrix = inputMatrix;
+        n = size;
+    }
+
+    // Метод для обчислення суми елементів головної діагоналі
+    public int SumOfMainDiagonal()
+    {
+        int sum = 0;
+        for (int i = 0; i < n; i++)
+        {
+            sum += matrix[i, i];
+        }
+        return sum;
+    }
+
+    // Метод для заміни елементів рядка, де знаходиться мінімальний елемент, сумою елементів головної діагоналі
+    public void ReplaceRowWithMinElement()
+    {
+        int minElement = int.MaxValue;
+        int minRowIndex = 0;
+
+        // Знаходимо мінімальний елемент та його рядок
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (matrix[i, j] < minElement)
+                {
+                    minElement = matrix[i, j];
+                    minRowIndex = i;
+                }
+            }
+        }
+
+        // Обчислюємо суму елементів головної діагоналі
+        int sumDiagonal = SumOfMainDiagonal();
+
+        // Замінюємо елементи рядка сумою елементів головної діагоналі
+        for (int j = 0; j < n; j++)
+        {
+            matrix[minRowIndex, j] = sumDiagonal;
+        }
+    }
+
+    // Метод для виводу матриці
+    public void PrintMatrix()
+    {
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                Console.Write(matrix[i, j] + "\t");
+            }
+            Console.WriteLine();
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        char continueChoice;
+
+        do
+        {
+            int n;
+
+            // Запит на введення розміру матриці від користувача
+            Console.Write("Введіть розмір матриці n (n повинно бути більше 0): ");
+            while (!int.TryParse(Console.ReadLine(), out n) || n <= 0)
+            {
+                Console.WriteLine("Некоректне введення. Введіть ціле додатне число.");
+                Console.Write("Введіть розмір матриці n (n повинно бути більше 0): ");
+            }
+
+            int[,] matrix = new int[n, n];
+
+            // Запит на вибір способу заповнення матриці
+            Console.WriteLine("Виберіть спосіб заповнення матриці:");
+            Console.WriteLine("1. Ввести матрицю з клавіатури");
+            Console.WriteLine("2. Заповнити матрицю випадковими числами");
+            Console.Write("Ваш вибір (1 або 2): ");
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    // Варіант А: введення матриці з клавіатури
+                    Console.WriteLine("Введіть елементи матриці:");
+                    for (int i = 0; i < n; i++)
+                    {
+                        for (int j = 0; j < n; j++)
+                        {
+                            while (!int.TryParse(Console.ReadLine(), out matrix[i, j]))
+                            {
+                                Console.WriteLine("Некоректне введення. Введіть ціле число.");
+                            }
+                        }
+                    }
+                    break;
+                case "2":
+                    // Варіант Б: заповнення матриці випадковими числами
+                    Random random = new Random();
+                    for (int i = 0; i < n; i++)
+                    {
+                        for (int j = 0; j < n; j++)
+                        {
+                            matrix[i, j] = random.Next(-100, 101);
+                        }
+                    }
+
+                    // Вивід випадкової матриці
+                    Console.WriteLine("Випадкова матриця:");
+                    for (int i = 0; i < n; i++)
+                    {
+                        for (int j = 0; j < n; j++)
+                        {
+                            Console.Write(matrix[i, j] + "\t");
+                        }
+                        Console.WriteLine();
+                    }
+                    break;
+                default:
+                    Console.WriteLine("Некоректний вибір. Програма завершується.");
+                    return;
+            }
+
+            // Створення об'єкту класу MatrixManipulator з заданою матрицею
+            MatrixManipulator manipulator = new MatrixManipulator(matrix, n);
+
+            // Виведення початкової матриці
+            Console.WriteLine("Початкова матриця:");
+            manipulator.PrintMatrix();
+
+            // Заміна елементів рядка, де знаходиться мінімальний елемент
+            manipulator.ReplaceRowWithMinElement();
+
+            // Виведення зміненої матриці
+            Console.WriteLine("Змінена матриця:");
+            manipulator.PrintMatrix();
+
+            // Запитати користувача, чи хоче він продовжити
+            Console.Write("Чи хочете ви продовжити? (y/n): ");
+            continueChoice = Convert.ToChar(Console.ReadLine().ToLower());
+
+        } while (continueChoice == 'y');
+
+        Console.WriteLine("Програма завершена.");
+    }
+}
